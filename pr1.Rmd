@@ -1,0 +1,11 @@
+---
+title: "PR1 VD"
+author: "Gemma Bargalló Solé"
+date: "2025-11-26"
+output: html_document
+---
+
+```{r}
+MOI <- read.delim("MammalsOfIreland2016-2025.txt")
+```
+

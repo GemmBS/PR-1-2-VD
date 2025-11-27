@@ -73,11 +73,7 @@ MOI$Projection <- as.factor(MOI$Projection)
 # Places
 MOI$SiteName <- as.factor(MOI$SiteName)
 MOI$County <- as.factor(MOI$County)
-MOI$Vice.county <- as.factor(MOI$Vice.county)
 
-# Others
-MOI$Recorder <- as.factor(MOI$Recorder)
-MOI$Type.of.sighting <- as.factor(MOI$Type.of.sighting)
 ```
 
 
@@ -142,4 +138,15 @@ gt_table <- gt(missing_values_table) %>%
 # Show the table
 gt_table
 ```
+
+We remove those variables that have more than 70% missing values, as they do not provide us with any information.
+
+```{r removing variables and data type correction}
+# New dataframe without the columns that have more than 70% missing values.
+MOI2 <- MOI %>% 
+  select(-SurveyKey, -SampleKey, -SiteKey, -Determiner, -ImagePath, -Habitat.description, -Record.comment, -Life.stage, -Survey.name, -Vice.county)
+
+MOI2$Type.of.sighting <- as.factor(MOI2$Type.of.sighting)
+```
+
 

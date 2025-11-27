@@ -58,7 +58,7 @@ There are no duplicate records.
 
 Now, we want to recode the nature of each variable based on its appropriate data type (class).
 
-```{r format inconsistencies}
+```{r format inconsistencies, warning=FALSE, message=FALSE}
 # First, we convert the date columns
 MOI$StartDate <- as.Date(MOI$StartDate, format = "%d/%m/%Y")
 MOI$EndDate <- as.Date(MOI$EndDate, format = "%d/%m/%Y")
@@ -285,11 +285,31 @@ MOI2 %>%
   )
 ```
 
+We are imputing the remaining missing values in the Abundance_Simplified factor by assigning them the level 'Unknown'.
+
 ```{r}
 MOI2 <- MOI2 %>%
   mutate(
     Abundance_Simplified = Abundance_Simplified %>%
       fct_na_value_to_level(level = "Unknown")
   )
+
+MOI2 <- MOI2 %>%
+  select(-Abundance, -Abundance_Clean)
 ```
+
+Finally, we check that we no longer have any missing values in our dataframe.
+
+```{r}
+# Final missings
+colSums(is.na(MOI2))
+```
+Our mammal dataset is ready/prepared.
+
+
+
+# 2. PLANTS DATASET
+## 2.1 DATA IMPORT
+
+
 

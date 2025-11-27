@@ -440,3 +440,37 @@ gt_table <- gt(missing_values_table) %>%
 # Show the table
 gt_table
 ```
+
+
+We remove those variables that have more than 70% missing values, as they do not provide us with any information.
+
+```{r removing variables and data type correction}
+# New dataframe without the columns that have more than 70% missing values.
+POI2 <- POI %>% 
+  select(-SampleKey, -SiteKey, -Determiner, -ImagePath, -Habitat.description, -Abundance)
+
+# Final missings
+colSums(is.na(POI2))
+
+```
+
+#### GRID REFERENCE
+
+The `GridReference` variable is unnecessary since the complete and non-missing geographic data is already provided by the East and North coordinates, so let's remove it.
+
+```{r}
+POI2 <- POI2 %>%
+  select(-GridReference)
+```
+
+#### COUNTY 
+
+We substitute the 8883 NA records in the `County` variable with the category 'Unknown'.
+
+```{r}
+POI2$County <- POI2$County %>%
+  fct_na_value_to_level(level = "Unknown")
+POI2$County <- as.factor(POI2$County)
+
+```
+

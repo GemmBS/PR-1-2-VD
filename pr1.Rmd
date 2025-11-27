@@ -544,7 +544,6 @@ POI2 <- POI2 %>%
 ```
 
 
-
 # 3.DATA FRAMES JOIN
 
 We are now going to bind the two dataframes together, but first let's look at the variables that each dataframe has.
@@ -558,13 +557,18 @@ MOI2 <- MOI2 %>%
 ```{r}
 names(POI2)
 ```
+We selectively remove columns not needed for our analysis.
 
 ```{r}
+MOI2 <- MOI2 %>%
+  select( -DateType, -RecordKey)
 
+POI2 <- POI2 %>%
+  select(-SurveyKey, -DateType, -Survey.name, -RecordKey)
 ```
 
 
-Creem una variable nova que sigui el tipus d'ésser viu que es mostreja en cada registre:
+Let's generate a new variable to classify the type of organism (e.g., mammal or plant) for each entry:
 
 ```{r}
 # MOI2 (Mamífers)
@@ -576,14 +580,10 @@ POI2 <- POI2 %>%
   mutate(Type = "Plant")
 ```
 
-Unim els dataframes:
+We bind the dataframes:
 
 ```{r}
-# Uneix els dos dataframes per fila.
-# Les columnes amb el mateix nom s'ajunten, les diferents s'omplen amb NA.
 Combined_Dataset <- bind_rows(MOI2, POI2)
-
-# Comprovació de la mida total
-print(paste("Total d'observacions:", nrow(Combined_Dataset)))
+head(Combined_Dataset)
 ```
 

@@ -2,10 +2,50 @@
 title: "PR1 VD"
 author: "Gemma Bargalló Solé"
 date: "2025-11-26"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float:
+      position: left
+    toc_depth: 5   
+  word_document: default
+  pdf_document: default
 ---
 
-```{r}
-MOI <- read.delim("MammalsOfIreland2016-2025.txt")
+# 1. MAMMALS DATASET
+## 1.1 DATA IMPORT
+
+```{r packages import, warning=FALSE, message=FALSE}
+library(DataExplorer)
+library(dplyr)
+library(ggplot2)
 ```
 
+We start by working with the data on Irish mammals. We observe the first 6 records and generate a summary to see the size and structure of our data.
+
+```{r Mammals data import}
+MOI <- read.delim("MammalsOfIreland2016-2025.txt")
+head(MOI)
+summary(MOI)
+str(MOI)
+```
+
+The dataset has 14,394 rows (or observations) and 29 columns (or variables).
+
+## 1.2 DATA CLEANSING
+
+We start by performing data cleansing. We review the dataset to detect exact duplicates and format inconsistencies (e.g., casing, data types). We identify null (missing) values and decide whether to impute, remove, or flag them. Finally, we correct or eliminate outliers and invalid values that could distort the analysis.
+
+```{r plot intro}
+# We observe a summary plot of the variable types and the missing values (NAs)
+plot_intro(MOI, title = "Description of MOI database")
+```
+
+We have no complete rows.
+
+
+```{r}
+library(skimr)
+skim(MOI)
+```

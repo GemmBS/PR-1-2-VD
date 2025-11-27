@@ -44,6 +44,19 @@ plot_intro(MOI, title = "Description of MOI database")
 
 We have no complete rows.
 
+### 1.2.1 Duplicates and format inconsistencies
+
+```{r duplicates}
+duplicatedMOI <- duplicated(MOI)
+duplicatedMOI
+sum(duplicated(MOI))
+```
+There are no duplicate records.
+
+```{r format inconsistencies}
+
+```
+
 
 ```{r}
 library(skimr)

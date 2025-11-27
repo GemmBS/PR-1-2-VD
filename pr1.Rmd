@@ -184,7 +184,7 @@ diferences <- MOI2[logical_differences, c("StartDate", "EndDate", "Date")]
 print(diferences)
 ```
 
-The NAs in the Date variable occur precisely where `StartDate` $\neq$ `EndDate`, indicating a multi-day sampling event. We can now use this information to impute the missing `Date` values, possibly by using the StartDate.
+The NAs in the `Date` variable occur precisely where `StartDate` $\neq$ `EndDate`, indicating a multi-day sampling event. We can now use this information to impute the missing `Date` values, possibly by using the `StartDate`.
 
 ```{r warning=FALSE, message=FALSE}
 # Replace the NA in Date with the value from StartDate only when Date is NA.
@@ -192,6 +192,15 @@ MOI2 <- MOI2 %>%
   mutate(Date = if_else(is.na(Date), StartDate, Date))
 
 sum(is.na(MOI2$Date))
+```
+
+#### GRID REFERENCE
+
+The GridReference variable is unnecessary since the complete and non-missing geographic data is already provided by the East and North coordinates, so let's remove it.
+
+```{r}
+MOI2 <- MOI2 %>%
+  select(-GridReference)
 ```
 
 

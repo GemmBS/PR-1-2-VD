@@ -22,6 +22,7 @@ library(dplyr)
 library(ggplot2)
 library(gt)
 library(stringr) 
+library(forcats)
 ```
 
 We start by working with the data on Irish mammals. We observe the first 6 records and generate a summary to see the size and structure of our data.
@@ -196,11 +197,20 @@ sum(is.na(MOI2$Date))
 
 #### GRID REFERENCE
 
-The GridReference variable is unnecessary since the complete and non-missing geographic data is already provided by the East and North coordinates, so let's remove it.
+The `GridReference` variable is unnecessary since the complete and non-missing geographic data is already provided by the East and North coordinates, so let's remove it.
 
 ```{r}
 MOI2 <- MOI2 %>%
   select(-GridReference)
 ```
 
+
+#### RECORDER
+
+We substitute the 5 NA records in the `Recorder` variable with the category 'Unknown' and ensure it is of factor type.
+
+```{r}
+MOI2$Recorder[is.na(MOI2$Recorder)] <- "Unknown"
+MOI2$Recorder <- as.factor(MOI2$Recorder)
+```
 

@@ -23,6 +23,7 @@ library(ggplot2)
 library(gt)
 library(stringr) 
 library(forcats)
+library(lubridate)
 ```
 
 We start by working with the data on Irish mammals. We observe the first 6 records and generate a summary to see the size and structure of our data.
@@ -495,4 +496,94 @@ POI2$Sampling.method <- as.factor(POI2$Sampling.method)
 
 ```
 
+Let's confirm that the dataframe is now complete (no missings)
+
+```{r}
+# Final missings
+colSums(is.na(POI2))
+```
+
+### 2.2.4 Data standarisation
+
+We must prioritize the standardization of the `Date` variable, as its current inconsistent format needs to be fixed for subsequent processing.
+
+```{r warning=FALSE, message=FALSE}
+# Clean the Date column in POI2 to isolate the start date
+POI2 <- POI2 %>%
+  mutate(
+    # Step A: If there is a dash, take only the date before the dash (the start date)
+    Date_Clean = str_replace(Date, " -.*", ""),
+    
+    # Step B: Handle records that only have the year. We impute them with January 1st of that year.
+    Date_Clean = if_else(
+        str_detect(Date_Clean, "^\\d{4}$"),
+        paste0("01/01/", Date_Clean),    
+        Date_Clean
+    )
+  )
+
+# Final conversion to Date format
+POI2 <- POI2 %>%
+  mutate(Date = dmy(Date_Clean)) %>%
+  select(-Date_Clean) 
+```
+
+We now need to count the NAs in our dates, as some may have been generated during the standardization process.
+
+```{r}
+sum(is.na(POI2$Date))
+```
+We can now impute the missing `Date` values by using the `StartDate`.
+
+```{r}
+# Impute the remaining NAs in 'Date' using the cleaned 'StartDate'
+POI2 <- POI2 %>%
+  mutate(
+    Date = if_else(is.na(Date), StartDate, Date)
+  )
+```
+
+
+
+# 3.DATA FRAMES JOIN
+
+We are now going to bind the two dataframes together, but first let's look at the variables that each dataframe has.
+
+```{r}
+names(MOI2)
+MOI2 <- MOI2 %>%
+  rename(Sampling.method = Type.of.sighting)
+```
+
+```{r}
+names(POI2)
+```
+
+```{r}
+
+```
+
+
+Creem una variable nova que sigui el tipus d'ésser viu que es mostreja en cada registre:
+
+```{r}
+# MOI2 (Mamífers)
+MOI2 <- MOI2 %>%
+  mutate(Type = "Mammal")
+
+# POI_net (Plantes)
+POI2 <- POI2 %>%
+  mutate(Type = "Plant")
+```
+
+Unim els dataframes:
+
+```{r}
+# Uneix els dos dataframes per fila.
+# Les columnes amb el mateix nom s'ajunten, les diferents s'omplen amb NA.
+Combined_Dataset <- bind_rows(MOI2, POI2)
+
+# Comprovació de la mida total
+print(paste("Total d'observacions:", nrow(Combined_Dataset)))
+```
 

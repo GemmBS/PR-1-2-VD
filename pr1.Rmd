@@ -20,6 +20,8 @@ output:
 library(DataExplorer)
 library(dplyr)
 library(ggplot2)
+library(gt)
+library(stringr) 
 ```
 
 We start by working with the data on Irish mammals. We observe the first 6 records and generate a summary to see the size and structure of our data.
@@ -79,9 +81,65 @@ MOI$Type.of.sighting <- as.factor(MOI$Type.of.sighting)
 ```
 
 
+### 1.2.3 Missing values
+
+Let's proceed to examine, count, and treat the missing data (NAs).
+
+```{r whitespaces and missing values, warning=FALSE, message=FALSE}
+# Now we replace whitespace with NA
+
+MOI <- MOI %>%
+  mutate(
+    # 1. Remove extra whitespace, convert multiple spaces to a single one,
+    #    and leave empty ("") if there were only spaces.
+    #    The trimws() function also works here, but str_squish is very powerful.
+    across(
+      where(is.character),
+      ~ stringr::str_squish(.x)
+    )
+  ) %>%
+  mutate(
+    # 2. Convert the resulting empty strings ("") to NA
+    across(
+      where(is.character),
+      ~ na_if(.x, "")
+    )
+  )
 
 
-```{r}
-library(skimr)
-skim(MOI)
+missing_values  <- colSums(is.na(MOI))
+
+# Calculate the percentage of missing values per column
+total_values <- nrow(MOI)
+percentage_missing <- (missing_values / total_values) * 100
+
+# Convert to dataframe
+missing_values_table <- data.frame(
+  Variable = names(missing_values),
+  Missing_Values = missing_values,
+  Percentage_Missing = round(percentage_missing, 2)
+)
+
+# Create the table using gt
+gt_table <- gt(missing_values_table) %>%
+  tab_header(
+    title = "Table of missing values by variable"
+  ) %>%
+  fmt_number(
+    columns = vars(Percentage_Missing),
+    decimals = 2
+  ) %>%
+  cols_label(
+    Variable = "Variable",
+    Missing_Values = "Missing values",
+    Percentage_Missing = "% Missings"
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+
+# Show the table
+gt_table
 ```
+

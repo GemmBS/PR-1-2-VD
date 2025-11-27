@@ -53,9 +53,32 @@ sum(duplicated(MOI))
 ```
 There are no duplicate records.
 
-```{r format inconsistencies}
+Now, we want to recode the nature of each variable based on its appropriate data type (class).
 
+```{r format inconsistencies}
+# First, we convert the date columns
+MOI$StartDate <- as.Date(MOI$StartDate, format = "%d/%m/%Y")
+MOI$EndDate <- as.Date(MOI$EndDate, format = "%d/%m/%Y")
+MOI$Date <- as.Date(MOI$Date, format = "%d/%m/%Y")
+
+# Now we transform the variables (or columns) related to taxonomic groups
+MOI$TaxonVersionKey <- as.factor(MOI$TaxonVersionKey)
+MOI$TaxonName <- as.factor(MOI$TaxonName)
+
+# Geographical variables
+MOI$Projection <- as.factor(MOI$Projection)
+
+# Places
+MOI$SiteName <- as.factor(MOI$SiteName)
+MOI$County <- as.factor(MOI$County)
+MOI$Vice.county <- as.factor(MOI$Vice.county)
+
+# Others
+MOI$Recorder <- as.factor(MOI$Recorder)
+MOI$Type.of.sighting <- as.factor(MOI$Type.of.sighting)
 ```
+
+
 
 
 ```{r}

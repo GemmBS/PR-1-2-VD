@@ -602,3 +602,21 @@ write.csv(DB, "Mammals_Plants_Dataset.csv", row.names = FALSE)
 ```
 
 
+## 3.1 DATA STANDARIZATION
+
+```{r}
+DB <- DB %>%
+  mutate(
+    County = str_replace(County, "Kidare", "Kildare")
+  )
+
+DB$County <- as.factor(DB$County)
+summary(DB$County)
+str(DB$County)
+```
+
+```{r}
+summary(DB$SiteName)
+str(DB$SiteName)
+```
+

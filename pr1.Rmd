@@ -225,4 +225,71 @@ MOI2$Type.of.sighting <- MOI2$Type.of.sighting %>%
 ```
 
 
+#### ABUNDANCE
+
+We want to see first the categories of `Abundance` variable.
+
+```{r}
+MOI2$Abundance <- as.factor(MOI2$Abundance)
+summary(MOI2$Abundance)
+```
+
+
+We're going to transform the mixed text and numeric entries in `Abundance` into simplified categories.
+
+```{r}
+MOI2$Abundance <- as.character(MOI2$Abundance)
+MOI2 <- MOI2 %>%
+   mutate(across(where(is.character), ~ str_squish(.x))) %>%
+   mutate(across(where(is.character), ~ na_if(.x, "")))
+
+
+MOI2 <- MOI2 %>%
+  mutate(
+    Abundance_Clean = str_to_lower(Abundance), # Convert all to lowercase
+
+    Abundance_Simplified = case_when(
+      is.na(Abundance) ~ NA_character_,
+
+      # 1. "Zero" or "Absent" Categories
+      str_detect(Abundance_Clean, "^0$|cap|none|^na$") ~ "Absent",
+
+      # 2. "Low" Categories (Small numbers, simple text, or less than 10)
+      str_detect(Abundance_Clean, "^[1-9]$|^one|^two|^i$|male|scat|pup|young|breed|max\\.|a time") ~ "Low",
+
+      # 3. "High" Categories (Large numbers, high ranges)
+      str_detect(Abundance_Clean, "100|207|300|450|500|600|80\\+|\\d{3,}|[5-9][0-9]\\+") ~ "High",
+
+      # 4. "Medium" Categories (Remaining larger numbers, several, 10+)
+      TRUE ~ "Medium_or_Other"
+    )
+  ) %>%
+  # Convert the simplified column to an ordered factor
+  mutate(
+    Abundance_Simplified = factor(Abundance_Simplified,
+                                  levels = c("Absent", "Low", "Medium_or_Other", "High"),
+                                  ordered = TRUE)
+  )
+```
+
+We want to recalculate de NA's:
+
+```{r}
+# Select only the columns of interest and sum the NAs
+MOI2 %>%
+  select(Abundance, Abundance_Clean, Abundance_Simplified) %>%
+  summarise(
+    NA_Abundance_Original = sum(is.na(Abundance)),
+    NA_Abundance_Clean = sum(is.na(Abundance_Clean)),
+    NA_Abundance_Simplified = sum(is.na(Abundance_Simplified))
+  )
+```
+
+```{r}
+MOI2 <- MOI2 %>%
+  mutate(
+    Abundance_Simplified = Abundance_Simplified %>%
+      fct_na_value_to_level(level = "Unknown")
+  )
+```
 

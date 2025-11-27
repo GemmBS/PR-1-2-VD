@@ -214,3 +214,15 @@ MOI2$Recorder[is.na(MOI2$Recorder)] <- "Unknown"
 MOI2$Recorder <- as.factor(MOI2$Recorder)
 ```
 
+
+#### TYPE OF SIGHTING
+
+We substitute the 3936 NA records in the `Type.of.sighting` variable with the category 'Unknown'.
+
+```{r}
+MOI2$Type.of.sighting <- MOI2$Type.of.sighting %>%
+  fct_na_value_to_level(level = "Unknown")
+```
+
+
+

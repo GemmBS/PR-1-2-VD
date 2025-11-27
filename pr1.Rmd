@@ -44,7 +44,7 @@ We start by performing data cleansing. We review the dataset to detect exact dup
 plot_intro(MOI, title = "Description of MOI database")
 ```
 
-We have no complete rows.
+We have no complete rows and a 13.8% of missings.
 
 ### 1.2.1 Duplicates and format inconsistencies
 
@@ -147,6 +147,51 @@ MOI2 <- MOI %>%
   select(-SurveyKey, -SampleKey, -SiteKey, -Determiner, -ImagePath, -Habitat.description, -Record.comment, -Life.stage, -Survey.name, -Vice.county)
 
 MOI2$Type.of.sighting <- as.factor(MOI2$Type.of.sighting)
+
+# Final missings
+colSums(is.na(MOI2))
+
+```
+We will now investigate the remaining missing values in our retained variables to decide on an imputation or treatment strategy.
+
+
+#### DATE
+
+One of our three date variables contains 29 NAs. Our strategy is to verify the consistency between `Start date` and `End date`—which largely seem identical—to find a pattern for imputing the missings in the primary `Date` variable.
+
+```{r}
+identical(MOI2$StartDate, MOI2$EndDate)
+```
+They aren't identical. 
+
+Let's see which ones aren't identical. 
+
+```{r}
+# Identify which rows are different
+logical_differences <- (MOI2$StartDate != MOI2$EndDate | 
+                        MOI2$StartDate != MOI2$Date | 
+                        MOI2$EndDate != MOI2$Date)
+
+# Convert the NAs resulting from the comparison to FALSE (since NAs are neither TRUE nor FALSE for R)
+# This prevents subset/filter from removing rows where the difference is NA (e.g., NA != NA)
+logical_differences[is.na(logical_differences)] <- FALSE
+
+# Show the row numbers (indices) where the difference is found
+print(which(logical_differences))
+
+# 4. Show the dataframe of differences (including indices as row names)
+diferences <- MOI2[logical_differences, c("StartDate", "EndDate", "Date")]
+print(diferences)
+```
+
+The NAs in the Date variable occur precisely where `StartDate` $\neq$ `EndDate`, indicating a multi-day sampling event. We can now use this information to impute the missing `Date` values, possibly by using the StartDate.
+
+```{r warning=FALSE, message=FALSE}
+# Replace the NA in Date with the value from StartDate only when Date is NA.
+MOI2 <- MOI2 %>%
+  mutate(Date = if_else(is.na(Date), StartDate, Date))
+
+sum(is.na(MOI2$Date))
 ```
 
 

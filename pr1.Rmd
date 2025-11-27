@@ -474,3 +474,25 @@ POI2$County <- as.factor(POI2$County)
 
 ```
 
+#### RECORD COMMENT
+
+Let's remove the `record comment` variable, as they are character-type comments and won't be useful for the analysis
+
+```{r}
+POI2 <- POI2 %>%
+  select(-Record.comment)
+```
+
+
+#### SAMPLING METHOD
+
+We substitute the 6940 NA records in the `Sampling.method` variable with the category 'Unknown'.
+
+```{r}
+POI2$Sampling.method <- POI2$Sampling.method %>%
+  fct_na_value_to_level(level = "Unknown")
+POI2$Sampling.method <- as.factor(POI2$Sampling.method)
+
+```
+
+

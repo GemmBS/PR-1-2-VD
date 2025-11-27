@@ -583,7 +583,22 @@ POI2 <- POI2 %>%
 We bind the dataframes:
 
 ```{r}
-Combined_Dataset <- bind_rows(MOI2, POI2)
-head(Combined_Dataset)
+DB <- bind_rows(MOI2, POI2)
+head(DB)
+DB$Type <- as.factor(DB$Type)
 ```
+
+```{r}
+# Final missings
+colSums(is.na(DB))
+
+DB$Abundance_Simplified[is.na(DB$Abundance_Simplified)] <- "Unknown"
+```
+
+```{r}
+# Export the Combined_Dataset dataframe to a CSV file
+
+write.csv(DB, "Mammals_Plants_Dataset.csv", row.names = FALSE)
+```
+
 

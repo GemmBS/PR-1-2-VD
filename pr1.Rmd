@@ -311,5 +311,132 @@ Our mammal dataset is ready/prepared.
 # 2. PLANTS DATASET
 ## 2.1 DATA IMPORT
 
+Now we are going to work with the data on Irish Plants. We observe the first 6 records and generate a summary to see the size and structure of our data.
+
+```{r Plants data import}
+POI <- read.delim("DiscreteVascularPlantSurveys.txt")
+head(POI)
+summary(POI)
+str(POI)
+```
+
+The dataset has 30680 rows (or observations) and 27 columns (or variables).
 
 
+## 2.2 DATA CLEANSING
+
+We start by performing data cleansing. We review the dataset to detect exact duplicates and format inconsistencies (e.g., casing, data types). We identify null (missing) values and decide whether to impute, remove, or flag them. Finally, we correct or eliminate outliers and invalid values that could distort the analysis.
+
+```{r plot intro}
+# We observe a summary plot of the variable types and the missing values (NAs)
+plot_intro(POI, title = "Description of POI database")
+```
+
+We have no complete rows and a 15% of missings.
+
+### 2.2.1 Duplicates and format inconsistencies
+
+```{r duplicates}
+duplicatedPOI <- duplicated(POI)
+duplicatedPOI
+sum(duplicated(POI))
+```
+We have 98 duplicated records. 
+
+We are going to filter out the duplicated rows to keep only the unique observations.
+
+```{r}
+# Create a new dataframe that contains only unique rows
+POI <- POI %>% 
+  distinct()
+
+#Check the new size of the dataframe
+# The difference between the original number of rows and POI_net should now be exactly 98
+nrow(POI)
+```
+Now, we have 30582 observations.
+
+There are no duplicate records.
+
+We want to recode the nature of each variable based on its appropriate data type (class).
+
+```{r format inconsistencies, warning=FALSE, message=FALSE}
+# First, we convert the date columns
+POI$StartDate<- as.Date(POI$StartDate, format = "%d/%m/%Y")
+POI$EndDate <- as.Date(POI$EndDate, format = "%d/%m/%Y")
+
+# Now we transform the variables (or columns) related to taxonomic groups
+POI$TaxonVersionKey <- as.factor(POI$TaxonVersionKey)
+POI$TaxonName <- as.factor(POI$TaxonName)
+
+# Geographical variables
+POI$Projection <- as.factor(POI$Projection)
+
+# Places
+POI$SiteName <- as.factor(POI$SiteName)
+
+```
+
+
+
+### 2.2.3 Missing values
+
+Let's proceed to examine, count, and treat the missing data (NAs).
+
+```{r whitespaces and missing values, warning=FALSE, message=FALSE}
+# Now we replace whitespace with NA
+
+POI <- POI %>%
+  mutate(
+    # 1. Remove extra whitespace, convert multiple spaces to a single one,
+    #    and leave empty ("") if there were only spaces.
+    #    The trimws() function also works here, but str_squish is very powerful.
+    across(
+      where(is.character),
+      ~ stringr::str_squish(.x)
+    )
+  ) %>%
+  mutate(
+    # 2. Convert the resulting empty strings ("") to NA
+    across(
+      where(is.character),
+      ~ na_if(.x, "")
+    )
+  )
+
+
+missing_values  <- colSums(is.na(POI))
+
+# Calculate the percentage of missing values per column
+total_values <- nrow(POI)
+percentage_missing <- (missing_values / total_values) * 100
+
+# Convert to dataframe
+missing_values_table <- data.frame(
+  Variable = names(missing_values),
+  Missing_Values = missing_values,
+  Percentage_Missing = round(percentage_missing, 2)
+)
+
+# Create the table using gt
+gt_table <- gt(missing_values_table) %>%
+  tab_header(
+    title = "Table of missing values by variable"
+  ) %>%
+  fmt_number(
+    columns = vars(Percentage_Missing),
+    decimals = 2
+  ) %>%
+  cols_label(
+    Variable = "Variable",
+    Missing_Values = "Missing values",
+    Percentage_Missing = "% Missings"
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(everything())
+  )
+
+# Show the table
+gt_table
+```

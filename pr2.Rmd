@@ -21,6 +21,7 @@ library(here)
 library(dplyr)
 library(forcats)
 library(leaflet)
+library(crosstalk)
 ```
 
 ```{r data import}
@@ -59,94 +60,76 @@ DB <- DB%>%
 ## Base structure for an interactive map using R and Leaflet
 ## 3.1 Minimum data preparation
 
-Before plotting, we create a "map-ready" version of the dataset.
+We will use a single SharedData object. This ensures that all filters (time and species type) act on the same data stream, preventing synchronization errors.
 
 ```{r}
+# 1. Ensure Year is a clean integer and Date is correctly formatted
 DB_map <- DB %>%
-  filter(!is.na(lon), !is.na(lat)) %>%
-  filter(Type %in% c("Plant", "Mammal"))
-```
+  filter(!is.na(lon), !is.na(lat), !is.na(Date)) %>%
+  filter(Type %in% c("Plant", "Mammal")) %>%
+  mutate(Year = as.integer(format(as.Date(Date), "%Y")))
+
+# 2. Create a single SharedData object for all interactive elements
+shared_data <- SharedData$new(DB_map)
+````
 
 
 ## 3.2 Defining the color palette
 
 ```{r}
-pal_type <- c(
-  "Plant"  = "#2E8B57",   # green
-  "Mammal" = "#2C3E50"    # dark blue
+# Define colors for the biological groups
+pal_species <- colorFactor(
+  palette = c("#2E8B57", "#2C3E50"), 
+  domain = DB_map$Type
 )
 ```
 
-## 3.3 Base Map initialization
+
+## 3.3 Dashboard assembly: Slider and Checkboxes
+
+Using bscols, we will place the time slider and the species selector (checkboxes) at the top of the map. This provides a professional "dashboard" feel.
 
 ```{r}
-map <- leaflet(DB_map) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  setView(lng = -8, lat = 53.3, zoom = 7)
-
-```
-
-## 3.4 Incorporating the plant species layer
-
-```{r}
-map <- map %>%
-  addCircleMarkers(
-  data = DB_map %>% filter(Type == "Plant"),
-  lng = ~lon,
-  lat = ~lat,
-  radius = 4,
-  color = pal_type[["Plant"]],
-  fillOpacity = 0.65,
-  stroke = FALSE,
-  popup = ~paste0(
-    "<b>Species:</b> ", TaxonName, "<br>",
-    "<b>Group:</b> ", Type, "<br>",
-    "<b>County:</b> ", County, "<br>",
-    "<b>Date:</b> ", Date
-  ),
-  group = "Plants"
+# Create the interactive dashboard
+bscols(
+  widths = c(12),
+  # 1. Time Slider (linked to shared_data)
+  filter_slider("year_selector", "Select Observation Year", shared_data, ~Year, width = "100%"),
+  
+  # 2. Species Selector (replaces the Leaflet layer control for better compatibility)
+  filter_checkbox("type_selector", "Select Species Group", shared_data, ~Type, inline = TRUE),
+  
+  # 3. The Map
+  leaflet(shared_data) %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    setView(lng = -8, lat = 53.3, zoom = 7) %>%
+    addCircleMarkers(
+      lng = ~lon, lat = ~lat,
+      radius = 4,
+      color = ~pal_species(Type),
+      fillOpacity = 0.65,
+      stroke = FALSE,
+      popup = ~paste0(
+        "<b>Species:</b> ", TaxonName, "<br>",
+        "<b>Group:</b> ", Type, "<br>",
+        "<b>Year:</b> ", Year
+      )
+    ) %>%
+    addLegend(
+      position = "bottomright",
+      pal = pal_species,
+      values = ~Type,
+      title = "Species Group"
+    )
 )
 
-
-```
-
-## 3.5 Incorporating the mammal species layer
-
-```{r}
-map <- map %>%
-  addCircleMarkers(
-    data = DB_map %>% filter(Type == "Mammal"),
-    lng = ~lon,
-    lat = ~lat,
-    radius = 4,
-    color = pal_type[["Mammal"]],
-    fillOpacity = 0.65,
-    stroke = FALSE,
-    popup = ~paste0(
-      "<b>Species:</b> ", TaxonName, "<br>",
-      "<b>Group:</b> ", Type, "<br>",
-      "<b>County:</b> ", County, "<br>",
-      "<b>Date:</b> ", Date
-    ),
-    group = "Mammals"
-  )
-
 ```
 
 
-## 3.6 Layer control
 
-```{r}
-map <- map %>%
-  addLayersControl(
-    overlayGroups = c("Plants", "Mammals"),
-    options = layersControlOptions(collapsed = FALSE)
-  )
 
-```
+# 4. VISUALIZATION ANSWERS
 
-```{r}
-map
+The main visualization focuses on exploring the spatial distribution of plant and mammal species across Ireland. Through interactive mapping, users can identify regions with higher species richness, observe areas where plants and mammals co-occur, and explore individual species records in detail. Additional contextual variables such as sampling method and observation date allow for a more nuanced interpretation of spatial patterns and potential biases in species detection.
 
-```
 

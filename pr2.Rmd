@@ -51,7 +51,7 @@ shared_data <- SharedData$new(DB_map)
 
 # Define colors for the biological groups
 pal_species <- colorFactor(
-  palette = c("#2E8B57", "#2C3E50"), 
+  palette = c("#2C3E50","#2E8B57"), 
   domain = DB_map$Type
 )
 

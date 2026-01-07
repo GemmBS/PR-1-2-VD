@@ -596,11 +596,6 @@ colSums(is.na(DB))
 DB$Abundance_Simplified[is.na(DB$Abundance_Simplified)] <- "Unknown"
 ```
 
-```{r}
-# Export the Combined_Dataset dataframe to a CSV file
-
-write.csv(DB, "Mammals_Plants_Dataset.csv", row.names = FALSE)
-```
 
 ```{r}
 colSums(is.na(DB))
@@ -705,3 +700,30 @@ DB_final$SiteName<- as.factor(DB_final$SiteName)
 summary(DB_final$SiteName)
 ```
 
+### 3.1.4 PROJECTION, DATE AND ABUNDANCE
+
+```{r}
+# Standardize the Projection column to reflect the current CRS
+DB <- DB %>%
+  mutate(Projection = "WGS84")
+
+DB$Projection<- as.factor(DB$Projection)
+
+# Change type of some variables 
+
+DB$Date <- as.Date(DB$Date)
+DB$StartDate <- as.Date(DB$StartDate)
+DB$EndDate <- as.Date(DB$EndDate)
+DB$Type <- factor(DB$Type, levels = c("Plant", "Mammal"))
+DB <- DB%>%
+  mutate(Abundance_Simplified = factor(Abundance_Simplified, 
+                                       levels = c("Low", "Medium", "High"), 
+                                       ordered = TRUE)) %>%
+  mutate(Abundance_Simplified = fct_na_value_to_level(Abundance_Simplified, level = "Unknown"))
+```
+
+```{r}
+# Export the Combined_Dataset dataframe to a CSV file
+
+write.csv(DB_final, "Mammals_Plants_Dataset.csv", row.names = FALSE)
+```

@@ -22,6 +22,7 @@ library(dplyr)
 library(forcats)
 library(leaflet)
 library(crosstalk)
+library(tidyr)
 ```
 
 ```{r data import}
@@ -131,5 +132,49 @@ bscols(
 # 4. VISUALIZATION ANSWERS
 
 The main visualization focuses on exploring the spatial distribution of plant and mammal species across Ireland. Through interactive mapping, users can identify regions with higher species richness, observe areas where plants and mammals co-occur, and explore individual species records in detail. Additional contextual variables such as sampling method and observation date allow for a more nuanced interpretation of spatial patterns and potential biases in species detection.
+
+
+## 4.1. How are plant and mammal species distributed spatially across Ireland?
+– Interactive maps based on coordinate data (done it)
+
+## 4.2 Which regions show the highest biodiversity levels?
+– Calculation of biodiversity indices by county or grid cell
+
+
+```{r}
+# 1. Prepare data: Count unique species per county and year
+race_data <- DB_map %>%
+  group_by(County, Year) %>%
+  summarise(n_species = n_distinct(TaxonName), .groups = 'drop') %>%
+  filter(!is.na(County))
+
+# 2. Create a complete grid of years and counties so there are no gaps
+all_years <- min(race_data$Year):max(race_data$Year)
+all_counties <- unique(race_data$County)
+full_grid <- expand.grid(Year = all_years, County = all_counties)
+
+# 3. Merge, fill zeros, and calculate the CUMULATIVE sum
+race_final <- full_grid %>%
+  left_join(race_data, by = c("Year", "County")) %>%
+  mutate(n_species = replace_na(n_species, 0)) %>%
+  group_by(County) %>%
+  mutate(cumulative_species = cumsum(n_species)) %>%
+  ungroup()
+
+# 4. Reshape to WIDE format (Flourish needs years as columns)
+flourish_csv <- race_final %>%
+  pivot_wider(id_cols = County, names_from = Year, values_from = cumulative_species)
+
+# 5. Export to CSV
+write.csv(flourish_csv, "biodiversity_race_ireland.csv", row.names = FALSE)
+```
+
+
+
+To visualize the evolution of species records by county, I have developed an animated Bar Chart Race in Flourish.
+
+```{r, echo=FALSE}
+knitr::include_url("[https://public.flourish.studio/visualisation/27112446/](https://public.flourish.studio/visualisation/27112446/)", height = "600px")
+```
 
 

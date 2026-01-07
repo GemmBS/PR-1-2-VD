@@ -20,6 +20,7 @@ library(readr)
 library(here)
 library(dplyr)
 library(forcats)
+library(leaflet)
 ```
 
 ```{r data import}
@@ -39,6 +40,8 @@ summary(DB$Projection)
 ```
 
 ```{r}
+# Change type of some variables 
+
 DB$Date <- as.Date(DB$Date)
 DB$StartDate <- as.Date(DB$StartDate)
 DB$EndDate <- as.Date(DB$EndDate)
@@ -48,6 +51,102 @@ DB <- DB%>%
                                        levels = c("Low", "Medium", "High"), 
                                        ordered = TRUE)) %>%
   mutate(Abundance_Simplified = fct_na_value_to_level(Abundance_Simplified, level = "Unknown"))
+
+```
+
+
+# 3. DATA VISUALISARION: The spatial distribution and co-occurrence of plant and mammal species across Ireland
+## Base structure for an interactive map using R and Leaflet
+## 3.1 Minimum data preparation
+
+Before plotting, we create a "map-ready" version of the dataset.
+
+```{r}
+DB_map <- DB %>%
+  filter(!is.na(lon), !is.na(lat)) %>%
+  filter(Type %in% c("Plant", "Mammal"))
+```
+
+
+## 3.2 Defining the color palette
+
+```{r}
+pal_type <- c(
+  "Plant"  = "#2E8B57",   # green
+  "Mammal" = "#2C3E50"    # dark blue
+)
+```
+
+## 3.3 Base Map initialization
+
+```{r}
+map <- leaflet(DB_map) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  setView(lng = -8, lat = 53.3, zoom = 7)
+
+```
+
+## 3.4 Incorporating the plant species layer
+
+```{r}
+map <- map %>%
+  addCircleMarkers(
+  data = DB_map %>% filter(Type == "Plant"),
+  lng = ~lon,
+  lat = ~lat,
+  radius = 4,
+  color = pal_type[["Plant"]],
+  fillOpacity = 0.65,
+  stroke = FALSE,
+  popup = ~paste0(
+    "<b>Species:</b> ", TaxonName, "<br>",
+    "<b>Group:</b> ", Type, "<br>",
+    "<b>County:</b> ", County, "<br>",
+    "<b>Date:</b> ", Date
+  ),
+  group = "Plants"
+)
+
+
+```
+
+## 3.5 Incorporating the mammal species layer
+
+```{r}
+map <- map %>%
+  addCircleMarkers(
+    data = DB_map %>% filter(Type == "Mammal"),
+    lng = ~lon,
+    lat = ~lat,
+    radius = 4,
+    color = pal_type[["Mammal"]],
+    fillOpacity = 0.65,
+    stroke = FALSE,
+    popup = ~paste0(
+      "<b>Species:</b> ", TaxonName, "<br>",
+      "<b>Group:</b> ", Type, "<br>",
+      "<b>County:</b> ", County, "<br>",
+      "<b>Date:</b> ", Date
+    ),
+    group = "Mammals"
+  )
+
+```
+
+
+## 3.6 Layer control
+
+```{r}
+map <- map %>%
+  addLayersControl(
+    overlayGroups = c("Plants", "Mammals"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+```
+
+```{r}
+map
 
 ```
 

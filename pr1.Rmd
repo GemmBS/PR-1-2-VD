@@ -24,6 +24,7 @@ library(gt)
 library(stringr) 
 library(forcats)
 library(lubridate)
+library(sf)
 ```
 
 We start by working with the data on Irish mammals. We observe the first 6 records and generate a summary to see the size and structure of our data.
@@ -601,8 +602,14 @@ DB$Abundance_Simplified[is.na(DB$Abundance_Simplified)] <- "Unknown"
 write.csv(DB, "Mammals_Plants_Dataset.csv", row.names = FALSE)
 ```
 
+```{r}
+colSums(is.na(DB))
+```
+
+
 
 ## 3.1 DATA STANDARIZATION
+### 3.1.1 COUNTY
 
 ```{r}
 DB <- DB %>%
@@ -619,4 +626,43 @@ str(DB$County)
 summary(DB$SiteName)
 str(DB$SiteName)
 ```
+
+
+### 3.1.2 COORDINATES
+
+The dataset currently contains spatial information in two different Coordinate Reference Systems (CRS): the Irish Grid (OSI - EPSG:29903) and the World Geodetic System (WGS84 - EPSG:4326). To perform a consistent analysis and create accurate visualizations, it is essential to standardize all observations into a single system.
+
+We have chosen WGS84 as the final standard for the following reasons:
+
+- Interoperability: WGS84 is the global standard used by GPS and most web-mapping platforms (such as Leaflet, OpenStreetMap, and Google Maps).
+
+- Data Integration: Standardizing to a single CRS allows us to merge datasets from different sources (mammals and plants) without spatial displacement or errors.
+
+- Visualization Compatibility: Most modern R packages for spatial data, such as sf and ggplot2, work seamlessly with WGS84, making it easier to overlay our data on top of global base maps.
+
+```{r}
+# Rows in Irish Grid
+db_osi <- DB %>% filter(Projection == "OSI")
+
+sf_osi <- st_as_sf(
+  db_osi,
+  coords = c("East", "North"),
+  crs = 29903   # Irish Grid
+)
+
+sf_osi <- st_transform(sf_osi, 4326)
+
+# Rows in WGS84
+db_wgs <- DB %>% filter(Projection == "WGS84")
+
+# Merge all
+DB_final <- bind_rows(
+  sf_osi %>% mutate(lon = st_coordinates(.)[,1],
+                    lat = st_coordinates(.)[,2]) %>% st_drop_geometry(),
+  db_wgs %>% rename(lon = East, lat = North)
+)
+
+```
+
+
 

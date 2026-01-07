@@ -13,3 +13,41 @@ output:
   pdf_document: default
 ---
 
+# 1.DATA IMPORT
+
+```{r packages import, warning=FALSE, message=FALSE}
+library(readr)
+library(here)
+library(dplyr)
+library(forcats)
+```
+
+```{r data import}
+DB <- read.csv(here("Mammals_Plants_Dataset.csv"))
+head(DB)
+```
+
+# 2. LITTLE DATA CLEANING
+
+```{r}
+# Standardize the Projection column to reflect the current CRS
+DB <- DB %>%
+  mutate(Projection = "WGS84")
+
+DB$Projection<- as.factor(DB$Projection)
+summary(DB$Projection)
+```
+
+```{r}
+DB$Date <- as.Date(DB$Date)
+DB$StartDate <- as.Date(DB$StartDate)
+DB$EndDate <- as.Date(DB$EndDate)
+DB$Type <- factor(DB$Type, levels = c("Plant", "Mammal"))
+DB <- DB%>%
+  mutate(Abundance_Simplified = factor(Abundance_Simplified, 
+                                       levels = c("Low", "Medium", "High"), 
+                                       ordered = TRUE)) %>%
+  mutate(Abundance_Simplified = fct_na_value_to_level(Abundance_Simplified, level = "Unknown"))
+
+```
+

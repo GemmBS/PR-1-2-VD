@@ -13,9 +13,11 @@ output:
   pdf_document: default
 ---
 
-# 1.DATA IMPORT
+# 1. Introduction: Ireland's Biological Heritage
 
-```{r packages import, warning=FALSE, message=FALSE}
+This project explores nearly two centuries of biodiversity data in Ireland, focusing on two key groups: **Plants** (habitat providers) and **Mammals** (consumers). Using a unified dataset from the National Biodiversity Data Centre, we analyze over 40,000 records to uncover how these species are distributed and how ecological recording has evolved since **1837**.
+
+```{r packages and data import, warning=FALSE, message=FALSE}
 library(readr)
 library(here)
 library(dplyr)
@@ -23,45 +25,19 @@ library(forcats)
 library(leaflet)
 library(crosstalk)
 library(tidyr)
-```
+library(ggplot2)
+library(plotly)
 
-```{r data import}
 DB <- read.csv(here("Mammals_Plants_Dataset.csv"))
-head(DB)
 ```
 
-# 2. LITTLE DATA CLEANING
+# 2. Spatio-temporal distribution: The core analysis
 
-```{r}
-# Standardize the Projection column to reflect the current CRS
-DB <- DB %>%
-  mutate(Projection = "WGS84")
+To answer our primary research questions ---**how are species distributed and do they co-occur?**--- I have developed this interactive dashboard. It allows for a dynamic exploration of Ireland's biodiversity across both space and time.
 
-DB$Projection<- as.factor(DB$Projection)
-summary(DB$Projection)
-```
+-   **Interactive exploration**: Use the slider to navigate through the decades and the checkboxes to overlay or isolate the two biological groups.
 
-```{r}
-# Change type of some variables 
-
-DB$Date <- as.Date(DB$Date)
-DB$StartDate <- as.Date(DB$StartDate)
-DB$EndDate <- as.Date(DB$EndDate)
-DB$Type <- factor(DB$Type, levels = c("Plant", "Mammal"))
-DB <- DB%>%
-  mutate(Abundance_Simplified = factor(Abundance_Simplified, 
-                                       levels = c("Low", "Medium", "High"), 
-                                       ordered = TRUE)) %>%
-  mutate(Abundance_Simplified = fct_na_value_to_level(Abundance_Simplified, level = "Unknown"))
-
-```
-
-
-# 3. DATA VISUALISARION: The spatial distribution and co-occurrence of plant and mammal species across Ireland
-## Base structure for an interactive map using R and Leaflet
-## 3.1 Minimum data preparation
-
-We will use a single SharedData object. This ensures that all filters (time and species type) act on the same data stream, preventing synchronization errors.
+-   **Ecological overlap**: By viewing both layers simultaneously, we can identify regions where plant diversity directly supports mammalian populations.
 
 ```{r}
 # 1. Ensure Year is a clean integer and Date is correctly formatted
@@ -72,25 +48,13 @@ DB_map <- DB %>%
 
 # 2. Create a single SharedData object for all interactive elements
 shared_data <- SharedData$new(DB_map)
-````
 
-
-## 3.2 Defining the color palette
-
-```{r}
 # Define colors for the biological groups
 pal_species <- colorFactor(
   palette = c("#2E8B57", "#2C3E50"), 
   domain = DB_map$Type
 )
-```
 
-
-## 3.3 Dashboard assembly: Slider and Checkboxes
-
-Using bscols, we will place the time slider and the species selector (checkboxes) at the top of the map. This provides a professional "dashboard" feel.
-
-```{r}
 # Create the interactive dashboard
 bscols(
   widths = c(12),
@@ -126,20 +90,12 @@ bscols(
 
 ```
 
+# 3. Temporal trends: The evolution of recording
+## 3.1 The Biodiversity Race (Cumulative)
 
+The map reveals a massive increase in records over time. To better understand this trend, the following **Bar Chart Race** visualizes the cumulative growth of species richness by county.
 
-
-# 4. VISUALIZATION ANSWERS
-
-The main visualization focuses on exploring the spatial distribution of plant and mammal species across Ireland. Through interactive mapping, users can identify regions with higher species richness, observe areas where plants and mammals co-occur, and explore individual species records in detail. Additional contextual variables such as sampling method and observation date allow for a more nuanced interpretation of spatial patterns and potential biases in species detection.
-
-
-## 4.1. How are plant and mammal species distributed spatially across Ireland?
-– Interactive maps based on coordinate data (done it)
-
-## 4.2 Which regions show the highest biodiversity levels?
-– Calculation of biodiversity indices by county or grid cell
-
+This animation highlights the shift from historical, scattered observations to the **modern era of digital citizen science**, where the volume of data has exploded.
 
 ```{r}
 # 1. Prepare data: Count unique species per county and year
@@ -167,14 +123,34 @@ flourish_csv <- race_final %>%
 
 # 5. Export to CSV
 write.csv(flourish_csv, "biodiversity_race_ireland.csv", row.names = FALSE)
+
+{knitr::include_url("[https://public.flourish.studio/visualisation/27112446/](https://public.flourish.studio/visualisation/27112446/)", height = "600px")}
 ```
 
+## 3.2 Observation Density (Heatmap)
 
+To confirm if there are clear temporal trends, this **Temporal Heatmap** identifies the specific decades where sampling intensity peaked. It clearly shows how "Mammal" and "Plant" records have concentrated in the last 40 years, addressing our research question about sampling effort.
 
-To visualize the evolution of species records by county, I have developed an animated Bar Chart Race in Flourish.
+```{r}
+library(ggplot2)
+library(plotly)
 
-```{r, echo=FALSE}
-knitr::include_url("[https://public.flourish.studio/visualisation/27112446/](https://public.flourish.studio/visualisation/27112446/)", height = "600px")
+# 1. Prepare data for the heatmap: observations per decade
+heatmap_data <- DB_map %>%
+  mutate(Decade = (Year %/% 10) * 10) %>%
+  group_by(Decade, Type) %>%
+  summarise(Observations = n(), .groups = 'drop')
+
+# 2. Create the Heatmap
+p_heatmap <- ggplot(heatmap_data, aes(x = Decade, y = Type, fill = Observations)) +
+  geom_tile() +
+  scale_fill_gradient(low = "#e5f5f9", high = "#2ca25f") + # Green tones for biodiversity
+  labs(title = "Temporal heatmap: Observation density by decade",
+       x = "Decade",
+       y = "Species Group",
+       fill = "Records") +
+  theme_minimal()
+
+# Make it interactive
+ggplotly(p_heatmap)
 ```
-
-

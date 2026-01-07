@@ -663,6 +663,45 @@ DB_final <- bind_rows(
 )
 
 ```
+```{r}
+summary(DB_final$lon)
+summary(DB_final$lat)
+```
 
 
+### 3.1.3 SITE NAME
+
+The SiteName variable required standardization to ensure data consistency. Although human-readable, the raw data contained inconsistencies such as mixed usage of ampersands ("&") and the word "and", leading trailing spaces, and placeholder strings like "not given".
+
+Actions taken:
+
+- Converted all names to lowercase to avoid case-sensitive duplication.
+
+- Standardized connectors to a uniform "and" format.
+
+- Trimmed white spaces and converted placeholder text ("not given") into formal NA values.
+
+- Cleaned special characters to resolve encoding issues (e.g., UTF-8 accents).
+
+This process reduces the number of unique levels from 8,232 to a more manageable and accurate set for spatial grouping.
+
+```{r}
+# 1. Force character conversion outside the mutate pipe for safety.
+DB_final$SiteName <- iconv(DB_final$SiteName, from = "", to = "UTF-8", sub = "byte")
+
+# 2. Apply text cleaning procedures
+DB_final <- DB_final %>%
+  mutate(SiteName = SiteName %>%
+    tolower() %>%                   
+    str_trim() %>%
+    str_replace_all(" & ", " and ") %>%
+    na_if("not given") %>%
+    str_remove_all("[[:punct:]]")
+  )
+```
+
+```{r}
+DB_final$SiteName<- as.factor(DB_final$SiteName)
+summary(DB_final$SiteName)
+```
 

@@ -1,0 +1,15 @@
+---
+title: "pr2"
+author: "Gemma Bargalló Solé"
+date: "2026-01-07"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float:
+      position: left
+    toc_depth: 5   
+  word_document: default
+  pdf_document: default
+---
+

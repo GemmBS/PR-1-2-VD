@@ -119,6 +119,10 @@ knitr::include_graphics("Captura3.PNG")
 
 By **2017**, the map underwent a total transformation: a dense wave of blue markers (mammals) spread across the entire country, with a particular concentration in the southern and central regions. By 2024, the map reached its peak saturation, dominated by the dark blue of mammalian records.
 
+```{r}
+knitr::include_graphics("Captura4.PNG")
+```
+
 ## 2.2 Key ecological insights
 
 -   **Temporal bias vs. reality:** The sudden "saturation" of the map in the 21st century does not necessarily indicate a sudden increase in biological life, but rather a massive escalation in **sampling effort** and the adoption of digital recording tools.

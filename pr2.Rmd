@@ -178,11 +178,19 @@ This **Bar Chart Race** visualizes the cumulative growth of species richness acr
 
 For the first 140 years, the story of Irish biodiversity was shrouded in geographical ambiguity. Between 1837 and 1979, the majority of records lacked a specific county identification. These **"Unknown"** locations dominated the dataset, with up to 106 species accounted for but no clear regional home. This reflects a historical era where professional specimens were often labeled by "Ireland" or broad regions rather than precise modern counties.
 
-### The rise of regional s in urveys (1979--2000)
+```{r}
+knitr::include_graphics("Captura5.PNG")
+```
+
+### The rise of regional in surveys (1979--2000)
 
 The narrative changes dramatically in **1979**. For the first time, a specific county takes the lead: **Kildare** emerges with 13 species, quickly surpassing the previous "Unknown" totals. This marks the beginning of a more systematic, county-based recording approach.
 
 By **1981**, the map of knowledge expands rapidly. New records flood in from **Mayo, Clare, Roscommon, and Offaly**. In a sudden surge, **Mayo** claims the top spot with 178 species, overshadowing Kildare\'s 139. By **1986**, the race intensifies: while Mayo remains the leader (254 species), **Offaly** climbs to second place (193), pushing Kildare down to third. This "Mayo dominance" continues into the early 2000s, reaching 447 species by the turn of the millennium.
+
+```{r}
+knitr::include_graphics("Captura6.PNG")
+```
 
 ### Modern surges and the return of the unknown (2005--2024)
 
@@ -191,6 +199,10 @@ As we enter the 21st century, the data tells a dual story:
 -   **The Sligo explosion:** In **2011**, **Sligo** makes a stunning entrance, skyrocketing to second place with 891 species and overtaking the long-standing leader, Mayo.
 
 -   **The Big Data challenge:** Interestingly, by **2005**, the **"Unknown"** category returns to the top of the leaderboard (503 species). This trend continues until **2024**, where "Unknown" remains the most populated group with **1,509 species**.
+
+```{r}
+knitr::include_graphics("Captura7.PNG")
+```
 
 ### Final rankings (2024)
 
@@ -202,7 +214,11 @@ By the end of our timeline, the biodiversity "leaderboard" reflects both intensi
 
 3.  **Offaly:** 728 species. \... with **Monaghan** (251) and **Louth** (248) rounding out the top regions.
 
-# 4. Observation Density (Heatmap)
+```{r}
+knitr::include_graphics("Captura8.PNG")
+```
+
+# 4. Observation density (Heatmap)
 
 To confirm if there are clear temporal trends, this **Temporal Heatmap** identifies the specific decades where sampling intensity peaked. It clearly shows how "Mammal" and "Plant" records have concentrated in the last 40 years, addressing our research question about sampling effort.
 

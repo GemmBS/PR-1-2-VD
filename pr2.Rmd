@@ -107,6 +107,10 @@ knitr::include_graphics("Captura.345PNG.PNG")
 
 Throughout the late 19th century (1871--1885), new botanical records continued to emerge primarily in northern regions. Between **1891** and **1987**, we observe a progressive accumulation of green markers. These records began to cluster along the **coastal perimeters** before slowly moving inland toward the central plains.
 
+```{r}
+knitr::include_graphics("Captura2.PNG")
+```
+
 A pivotal shift occurred in **1987**, when the first mammal record appeared in the South-West. This marked the beginning of a new era. While plant records continued to intensify along the coasts, a dramatic "boom" in mammalian data occurred around **2015**, particularly in the South-East---an area that, until then, had shown lower botanical density.
 
 By **2017**, the map underwent a total transformation: a dense wave of blue markers (mammals) spread across the entire country, with a particular concentration in the southern and central regions. By 2024, the map reached its peak saturation, dominated by the dark blue of mammalian records.

@@ -1,5 +1,5 @@
 ---
-title: "pr2"
+title: "From silence to saturation: Two centuries of Irish Biodiversity (1837-2024)"
 author: "Gemma Bargalló Solé"
 date: "2026-01-07"
 output:

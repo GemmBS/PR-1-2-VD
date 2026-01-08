@@ -166,10 +166,43 @@ flourish_csv <- race_final %>%
 # 5. Export to CSV
 write.csv(flourish_csv, "biodiversity_race_ireland.csv", row.names = FALSE)
 
-{knitr::include_url("[https://public.flourish.studio/visualisation/27112446/](https://public.flourish.studio/visualisation/27112446/)", height = "600px")}
 ```
 
-## 3.2 Observation Density (Heatmap)
+[Biodiversity race Ireland](https://public.flourish.studio/visualisation/27112446/)
+
+## 3.2 A county-by-county perspective
+
+This **Bar Chart Race** visualizes the cumulative growth of species richness across the top 10 counties and regions from **1837 to 2024**. More than just a competition of numbers, it tells the story of how geographical precision and sampling efforts have shifted over nearly two centuries.
+
+### A Century of uncertainty (1837--1979)
+
+For the first 140 years, the story of Irish biodiversity was shrouded in geographical ambiguity. Between 1837 and 1979, the majority of records lacked a specific county identification. These **"Unknown"** locations dominated the dataset, with up to 106 species accounted for but no clear regional home. This reflects a historical era where professional specimens were often labeled by "Ireland" or broad regions rather than precise modern counties.
+
+### The rise of regional s in urveys (1979--2000)
+
+The narrative changes dramatically in **1979**. For the first time, a specific county takes the lead: **Kildare** emerges with 13 species, quickly surpassing the previous "Unknown" totals. This marks the beginning of a more systematic, county-based recording approach.
+
+By **1981**, the map of knowledge expands rapidly. New records flood in from **Mayo, Clare, Roscommon, and Offaly**. In a sudden surge, **Mayo** claims the top spot with 178 species, overshadowing Kildare\'s 139. By **1986**, the race intensifies: while Mayo remains the leader (254 species), **Offaly** climbs to second place (193), pushing Kildare down to third. This "Mayo dominance" continues into the early 2000s, reaching 447 species by the turn of the millennium.
+
+### Modern surges and the return of the unknown (2005--2024)
+
+As we enter the 21st century, the data tells a dual story:
+
+-   **The Sligo explosion:** In **2011**, **Sligo** makes a stunning entrance, skyrocketing to second place with 891 species and overtaking the long-standing leader, Mayo.
+
+-   **The Big Data challenge:** Interestingly, by **2005**, the **"Unknown"** category returns to the top of the leaderboard (503 species). This trend continues until **2024**, where "Unknown" remains the most populated group with **1,509 species**.
+
+### Final rankings (2024)
+
+By the end of our timeline, the biodiversity "leaderboard" reflects both intensive local surveying and the challenges of data standardization:
+
+1.  **Unknown:** 1,509 species (reflecting large-scale digital imports without precise county tags).
+
+2.  **Sligo:** 949 species.
+
+3.  **Offaly:** 728 species. \... with **Monaghan** (251) and **Louth** (248) rounding out the top regions.
+
+# 4. Observation Density (Heatmap)
 
 To confirm if there are clear temporal trends, this **Temporal Heatmap** identifies the specific decades where sampling intensity peaked. It clearly shows how "Mammal" and "Plant" records have concentrated in the last 40 years, addressing our research question about sampling effort.
 

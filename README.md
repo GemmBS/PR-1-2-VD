@@ -16,9 +16,9 @@ This repository contains the code and the unified dataset created for the Data v
 ├── .gitignore                             # Specifies files to ignore in Git
 ├── PR 1 & 2 VD.Rproj                      # RStudio project file
 ├── README.md                              # Main project documentation (This file)
-└── pr1.Rmd                                # R Markdown file containing code for cleaning, standardization, and initial analysis
-└── Storytelling_pr2.Rmd
-└── R_code.R
-├── Images/                                # Images inserted into output (Storytelling_pr2.html)
+├──pr1.Rmd                                # R Markdown file containing code for cleaning, standardization, and initial analysis
+├── Storytelling_pr2.Rmd
+├── R_code.R
+└── Images/                                # Images inserted into output (Storytelling_pr2.html)
 ```
 # This project is currently under development...

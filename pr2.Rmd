@@ -29,7 +29,10 @@ library(ggplot2)
 library(plotly)
 
 DB <- read.csv(here("Mammals_Plants_Dataset.csv"))
+
 ```
+
+[![*Mammals and plants. Source: <https://www.sciencenews.org/article/dark-coats-earliest-mammals-dinosaurs>*](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdE873DyvO_1rDxvrWQOS-eP5wb48emx0-mg&s){width="353"}](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdE873DyvO_1rDxvrWQOS-eP5wb48emx0-mg&s)
 
 # 2. Spatio-temporal distribution: The core analysis
 
@@ -91,6 +94,7 @@ bscols(
 ```
 
 # 3. Temporal trends: The evolution of recording
+
 ## 3.1 The Biodiversity Race (Cumulative)
 
 The map reveals a massive increase in records over time. To better understand this trend, the following **Bar Chart Race** visualizes the cumulative growth of species richness by county.

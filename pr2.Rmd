@@ -220,12 +220,9 @@ knitr::include_graphics("Captura8.PNG")
 
 # 4. Observation density (Heatmap)
 
-To confirm if there are clear temporal trends, this **Temporal Heatmap** identifies the specific decades where sampling intensity peaked. It clearly shows how "Mammal" and "Plant" records have concentrated in the last 40 years, addressing our research question about sampling effort.
+While the interactive map and the bar chart race show us *where* and *how* records accumulated, this **Temporal heatmap** provides a definitive answer to our research question: **Are there clear temporal trends in species presence?**
 
 ```{r}
-library(ggplot2)
-library(plotly)
-
 # 1. Prepare data for the heatmap: observations per decade
 heatmap_data <- DB_map %>%
   mutate(Decade = (Year %/% 10) * 10) %>%
@@ -245,3 +242,23 @@ p_heatmap <- ggplot(heatmap_data, aes(x = Decade, y = Type, fill = Observations)
 # Make it interactive
 ggplotly(p_heatmap)
 ```
+
+## 4.1 The Modern data explosion
+
+### The silence of the past
+
+The heatmap reveals a striking contrast between the 19th and 21st centuries. From **1837 until the late 1970s**, the density of records remains extremely low (represented by the pale, almost white tiles). Although biological recording existed, it was sporadic and limited to a few specialized specimens. For nearly 150 years, our "biological window" into Ireland's heritage was relatively narrow.
+
+### The great acceleration (1980--2024)
+
+The real story begins in the **1980s**, where we see the first significant shift in color density for Plants. However, the true "ecological revolution" is visible from the **year 2000 onwards**:
+
+-   **Plants (The Pioneers):** The decade of **2000** shows the highest peak of intensity (the darkest green), with over **12,000 records**. This reflects a massive, coordinated effort to document Ireland's flora at the turn of the millennium.
+
+-   **Mammals (The Recent Boom):** Interestingly, mammals show a slightly different pace. Their sampling intensity peaks later, during the **2010s and 2020s**. This suggests that while botanical surveys led the way, zoological interest has reached its maximum height in the most recent decade.
+
+# 5. Conclusion: sampling effort vs. biological reality
+
+The final heatmap confirms that the "trends" we observe are heavily influenced by **sampling effort**. The concentration of records in the last 40 years is not necessarily a sign that there are more species today than in 1850, but rather a testament to the **democratization of science**.
+
+The transition from the pale tiles of the past to the vibrant green of the present illustrates how technology, mobile apps, and a more engaged public have transformed biodiversity from a niche academic pursuit into a collective national treasure.

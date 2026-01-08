@@ -39,5 +39,7 @@ To address these complex ecological questions, this project leverages:
 ## Significance
 Beyond academic interest, this visualization serves as a tool for nature conservation and ecological monitoring. It transforms raw occurrence data into an impactful story about the "Great Acceleration" of biological recording and the democratization of science through citizen participation.
 
-# 3. Author
+# 3. Output
+https://gemmbs.github.io/PR-1-2-VD/
+# 4. Author
 - **Gemma Bargalló Solé**
